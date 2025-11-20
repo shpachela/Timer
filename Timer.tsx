@@ -1,13 +1,20 @@
 import { useEffect, useState, useRef } from "react";
 
-function fetchServer(isExpired = false) {
+type Status = 'RUN' | 'EXPIRED'
+
+interface Response {
+  status:Status;
+  time:number
+}
+
+function fetchServer(isExpired:boolean = false):Response {
   return !isExpired ? { status: "RUN", time: 10 } : { status: "EXPIRED", time: 0 };
 }
 
 export default function Timer() {
-  const [time, setTime] = useState(0);
-  const [status, setStatus] = useState("");
-  const intervalRef = useRef();
+  const [time, setTime] = useState<number>(0);
+  const [status, setStatus] = useState<Status>("RUN");
+ const intervalRef = useRef<number | null>(null);
 
   useEffect(() => {
     const { time, status } = fetchServer();
@@ -19,7 +26,7 @@ export default function Timer() {
     if (status !== "RUN" || intervalRef.current) return;
     
     intervalRef.current = setInterval(() => {
-      setTime(t => {
+      setTime((t: number) => {
         if (t <= 1) {
           clearInterval(intervalRef.current);
           intervalRef.current = null;
